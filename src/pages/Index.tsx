@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client"; // Adicione o client
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,15 +25,40 @@ import {
   Users,
   BarChart3,
   BookOpen,
+  LogOut,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { simulations } from "@/data/simulations";
+import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 6;
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { toast } = useToast();
 
+  useEffect(() => {
+    // Verifica sessão atual
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setUserEmail(user.email);
+    });
+
+    // Escuta mudanças (login/logout em outras abas)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUserEmail(null);
+    toast({ title: "Desconectado", description: "Você saiu do sistema." });
+  };
   // Lógica de Paginação
   const totalPages = Math.ceil(simulations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -59,10 +85,30 @@ const Index = () => {
               EtiCCista
             </h1>
           </div>
-          <div className="flex gap-4">
-            <Button variant="ghost" asChild>
-              <Link to="/auth">Login Administrativo</Link>
-            </Button>
+          <div className="flex gap-4 items-center">
+            {userEmail ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="truncate max-w-[150px]" title={userEmail}>
+                    {userEmail}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" asChild>
+                <Link to="/auth">Login Institucional</Link>
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -91,14 +137,27 @@ const Index = () => {
             >
               Explorar Cenários
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="rounded-full px-8"
-              asChild
-            >
-              <Link to="/auth">Criar Conta</Link>
-            </Button>
+            {userEmail ? (
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 bg-background"
+                asChild
+              >
+                <Link to="/metadata">
+                  <Users className="mr-2 h-4 w-4" /> Meu Perfil
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 bg-background"
+                asChild
+              >
+                <Link to="/auth">Criar Conta</Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
