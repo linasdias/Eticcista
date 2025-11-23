@@ -19,11 +19,7 @@ const Metadata = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
-
-  // Estado para armazenar o ID do registro atual (se existir)
-  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
-
+  const [isFetching, setIsFetching] = useState(true); // Estado para o carregamento inicial
   const [formData, setFormData] = useState({
     course: "",
     semester: "",
@@ -31,7 +27,7 @@ const Metadata = () => {
     priorKnowledge: "",
   });
 
-  // Carrega o DADO MAIS RECENTE do usuário ao abrir a página
+  // Carrega os dados do usuário ao abrir a página
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -44,21 +40,17 @@ const Metadata = () => {
           return;
         }
 
-        // AQUI ESTÁ A CORREÇÃO PRINCIPAL:
-        // Ordenamos por data decrescente e pegamos o primeiro (limit 1).
-        // Isso garante que pegamos o último registro, mesmo que existam duplicados.
+        // Busca se já existe metadado para este usuário
         const { data, error } = await supabase
           .from("academic_metadata")
           .select("*")
           .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .maybeSingle(); // maybeSingle não dá erro se não achar nada (retorna null)
 
         if (error) throw error;
 
         if (data) {
-          setCurrentRecordId(data.id); // Guardamos o ID para fazer UPDATE depois
+          // Se achou, preenche o formulário
           setFormData({
             course: data.course,
             semester: data.semester,
@@ -68,6 +60,7 @@ const Metadata = () => {
         }
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
+        // Não mostramos toast de erro aqui para não assustar o usuário novo
       } finally {
         setIsFetching(false);
       }
@@ -91,11 +84,17 @@ const Metadata = () => {
         return;
       }
 
+      // Verifica se já existe registro para decidir entre INSERT ou UPDATE
+      const { data: existingData } = await supabase
+        .from("academic_metadata")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
       let error;
 
-      // Se já carregamos um registro (currentRecordId), fazemos UPDATE nele.
-      // Isso evita criar lixo no banco a cada clique.
-      if (currentRecordId) {
+      if (existingData) {
+        // UPDATE
         const response = await supabase
           .from("academic_metadata")
           .update({
@@ -103,29 +102,18 @@ const Metadata = () => {
             semester: formData.semester,
             has_ethics_discipline: formData.hasEthicsDiscipline,
             prior_knowledge_level: parseInt(formData.priorKnowledge),
-            // Atualizamos o timestamp para saber que foi modificado agora
-            created_at: new Date().toISOString(),
           })
-          .eq("id", currentRecordId); // Usa o ID específico do registro carregado
-
+          .eq("user_id", user.id);
         error = response.error;
       } else {
-        // Se não existe registro nenhum, fazemos o primeiro INSERT
-        const response = await supabase
-          .from("academic_metadata")
-          .insert({
-            user_id: user.id,
-            course: formData.course,
-            semester: formData.semester,
-            has_ethics_discipline: formData.hasEthicsDiscipline,
-            prior_knowledge_level: parseInt(formData.priorKnowledge),
-          })
-          .select() // Retorna o dado criado para pegarmos o ID
-          .single();
-
-        if (response.data) {
-          setCurrentRecordId(response.data.id);
-        }
+        // INSERT
+        const response = await supabase.from("academic_metadata").insert({
+          user_id: user.id,
+          course: formData.course,
+          semester: formData.semester,
+          has_ethics_discipline: formData.hasEthicsDiscipline,
+          prior_knowledge_level: parseInt(formData.priorKnowledge),
+        });
         error = response.error;
       }
 
@@ -136,6 +124,8 @@ const Metadata = () => {
         description: "Suas informações foram salvas.",
       });
 
+      // Se for edição, talvez o usuário só queira salvar. Se for novo, vai pro jogo.
+      // Aqui mantemos o fluxo original: salvar -> ir para simulação
       setTimeout(() => {
         navigate("/simulation");
       }, 1000);
@@ -156,10 +146,9 @@ const Metadata = () => {
   if (isFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <ShieldAlert className="h-12 w-12 text-primary mx-auto animate-pulse" />
-          <p className="text-muted-foreground">Carregando seus dados...</p>
-        </div>
+        <p className="text-muted-foreground animate-pulse">
+          Carregando seu perfil...
+        </p>
       </div>
     );
   }
@@ -188,9 +177,8 @@ const Metadata = () => {
                   Seu Perfil Acadêmico
                 </h2>
                 <p className="text-muted-foreground">
-                  {currentRecordId
-                    ? "Edite seus dados abaixo para manter seu perfil atualizado."
-                    : "Complete seu perfil para iniciar a pesquisa."}
+                  Mantenha seus dados atualizados para contribuir com a
+                  pesquisa.
                 </p>
               </div>
             </div>
