@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -13,9 +13,11 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShieldAlert, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Metadata = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     course: "",
@@ -28,18 +30,59 @@ const Metadata = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Save metadata to database (will be implemented)
-    setTimeout(() => {
+    try {
+      // 1. Verificar quem está logado
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          title: "Sessão expirada",
+          description: "Por favor, faça login novamente.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      // 2. Enviar dados para a tabela que acabamos de criar
+      const { error } = await supabase.from("academic_metadata").insert({
+        user_id: user.id,
+        course: formData.course,
+        semester: formData.semester,
+        has_ethics_discipline: formData.hasEthicsDiscipline,
+        prior_knowledge_level: parseInt(formData.priorKnowledge),
+      });
+
+      if (error) throw error;
+
+      // 3. Sucesso
+      toast({
+        title: "Dados salvos!",
+        description: "Perfil acadêmico registrado.",
+      });
+
+      // Pequeno delay para o usuário ver o toast antes de mudar de tela
+      setTimeout(() => {
+        navigate("/simulation");
+      }, 1000);
+    } catch (error: any) {
+      console.error("Erro ao salvar metadados:", error);
+      toast({
+        title: "Erro ao salvar",
+        description: error.message || "Verifique sua conexão.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      navigate("/simulation");
-    }, 1000);
+    }
   };
 
   const isFormValid = Object.values(formData).every((value) => value !== "");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <Link
@@ -52,7 +95,6 @@ const Metadata = () => {
         </div>
       </header>
 
-      {/* Content */}
       <div className="flex-1 px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <Card className="p-8">
@@ -63,12 +105,13 @@ const Metadata = () => {
                   Perfil do Participante
                 </h2>
                 <p className="text-muted-foreground">
-                  Forneça informações sobre seu perfil acadêmico
+                  Para fins estatísticos do TCC, precisamos saber seu perfil.
                 </p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Seleção de Curso */}
               <div className="space-y-2">
                 <Label htmlFor="course">Curso</Label>
                 <Select
@@ -81,24 +124,29 @@ const Metadata = () => {
                     <SelectValue placeholder="Selecione seu curso" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cc">Ciência da Computação</SelectItem>
-                    <SelectItem value="si">Sistemas de Informação</SelectItem>
-                    <SelectItem value="es">Engenharia de Software</SelectItem>
-                    <SelectItem value="ec">Engenharia da Computação</SelectItem>
-                    <SelectItem value="ads">
-                      Análise e Desenvolvimento de Sistemas
+                    <SelectItem value="Ciência da Computação">
+                      Ciência da Computação
                     </SelectItem>
-                    <SelectItem value="rc">Redes de Computadores</SelectItem>
-                    <SelectItem value="si-tec">
-                      Segurança da Informação
+                    <SelectItem value="Sistemas de Informação">
+                      Sistemas de Informação
                     </SelectItem>
-                    <SelectItem value="outro">Outro</SelectItem>
+                    <SelectItem value="Engenharia de Software">
+                      Engenharia de Software
+                    </SelectItem>
+                    <SelectItem value="Engenharia da Computação">
+                      Engenharia da Computação
+                    </SelectItem>
+                    <SelectItem value="Análise e Desenv. de Sistemas">
+                      Análise e Desenv. de Sistemas
+                    </SelectItem>
+                    <SelectItem value="Outro">Outro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* Seleção de Semestre */}
               <div className="space-y-2">
-                <Label htmlFor="semester">Período/Semestre Atual</Label>
+                <Label htmlFor="semester">Semestre Atual</Label>
                 <Select
                   value={formData.semester}
                   onValueChange={(value) =>
@@ -106,28 +154,22 @@ const Metadata = () => {
                   }
                 >
                   <SelectTrigger id="semester">
-                    <SelectValue placeholder="Selecione o período" />
+                    <SelectValue placeholder="Selecione o semestre" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1º Período</SelectItem>
-                    <SelectItem value="2">2º Período</SelectItem>
-                    <SelectItem value="3">3º Período</SelectItem>
-                    <SelectItem value="4">4º Período</SelectItem>
-                    <SelectItem value="5">5º Período</SelectItem>
-                    <SelectItem value="6">6º Período</SelectItem>
-                    <SelectItem value="7">7º Período</SelectItem>
-                    <SelectItem value="8">8º Período</SelectItem>
-                    <SelectItem value="9">9º Período</SelectItem>
-                    <SelectItem value="10">10º Período ou mais</SelectItem>
+                    {[...Array(10)].map((_, i) => (
+                      <SelectItem key={i} value={String(i + 1)}>
+                        {i + 1}º Semestre
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="concluido">Já concluído</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* Pergunta sobre Ética */}
               <div className="space-y-3">
-                <Label>
-                  Você já cursou alguma disciplina relacionada a ética em
-                  computação, privacidade de dados ou tópicos similares?
-                </Label>
+                <Label>Já cursou disciplina de Ética em Computação?</Label>
                 <RadioGroup
                   value={formData.hasEthicsDiscipline}
                   onValueChange={(value) =>
@@ -136,110 +178,57 @@ const Metadata = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="ethics-yes" />
-                    <Label
-                      htmlFor="ethics-yes"
-                      className="font-normal cursor-pointer"
-                    >
-                      Sim
-                    </Label>
+                    <Label htmlFor="ethics-yes">Sim</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="no" id="ethics-no" />
-                    <Label
-                      htmlFor="ethics-no"
-                      className="font-normal cursor-pointer"
-                    >
-                      Não
-                    </Label>
+                    <Label htmlFor="ethics-no">Não</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="partial" id="ethics-partial" />
-                    <Label
-                      htmlFor="ethics-partial"
-                      className="font-normal cursor-pointer"
-                    >
-                      Apenas tópicos pontuais em outras disciplinas
+                    <Label htmlFor="ethics-partial">
+                      Apenas tópicos em outras matérias
                     </Label>
                   </div>
                 </RadioGroup>
               </div>
 
+              {/* Autoavaliação */}
               <div className="space-y-3">
                 <Label>
-                  Como você avalia seu conhecimento prévio sobre Internet dos
-                  Corpos (IoB) e seus riscos éticos?
+                  Conhecimento prévio sobre Internet dos Corpos (1-5)
                 </Label>
                 <RadioGroup
                   value={formData.priorKnowledge}
                   onValueChange={(value) =>
                     setFormData({ ...formData, priorKnowledge: value })
                   }
+                  className="flex space-x-4"
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1" id="knowledge-1" />
-                    <Label
-                      htmlFor="knowledge-1"
-                      className="font-normal cursor-pointer"
-                    >
-                      1 - Nenhum conhecimento
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="2" id="knowledge-2" />
-                    <Label
-                      htmlFor="knowledge-2"
-                      className="font-normal cursor-pointer"
-                    >
-                      2 - Conhecimento muito básico
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="3" id="knowledge-3" />
-                    <Label
-                      htmlFor="knowledge-3"
-                      className="font-normal cursor-pointer"
-                    >
-                      3 - Conhecimento moderado
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="4" id="knowledge-4" />
-                    <Label
-                      htmlFor="knowledge-4"
-                      className="font-normal cursor-pointer"
-                    >
-                      4 - Conhecimento avançado
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="5" id="knowledge-5" />
-                    <Label
-                      htmlFor="knowledge-5"
-                      className="font-normal cursor-pointer"
-                    >
-                      5 - Conhecimento especializado
-                    </Label>
-                  </div>
+                  {[1, 2, 3, 4, 5].map((level) => (
+                    <div key={level} className="flex flex-col items-center">
+                      <RadioGroupItem
+                        value={String(level)}
+                        id={`know-${level}`}
+                      />
+                      <Label htmlFor={`know-${level}`} className="mt-1">
+                        {level}
+                      </Label>
+                    </div>
+                  ))}
                 </RadioGroup>
+                <p className="text-xs text-muted-foreground">
+                  1 = Nenhum, 5 = Especialista
+                </p>
               </div>
 
-              <div className="mt-8 flex gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/consent")}
-                  className="flex-1"
-                >
-                  Voltar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!isFormValid || isLoading}
-                  className="flex-1"
-                >
-                  {isLoading ? "Salvando..." : "Continuar"}
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                disabled={!isFormValid || isLoading}
+                className="w-full"
+              >
+                {isLoading ? "Salvando..." : "Iniciar Simulação"}
+              </Button>
             </form>
           </Card>
         </div>
