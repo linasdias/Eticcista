@@ -1,227 +1,229 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ShieldAlert, AlertTriangle, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  ShieldAlert,
+  AlertTriangle,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { scenarios, type Scenario, type Choice } from "@/data/scenarios";
+import { storyNodes } from "@/data/storyTree"; // Importando a Árvore
+import { useToast } from "@/hooks/use-toast";
 
 const ScenarioSimulation = () => {
   const navigate = useNavigate();
-  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
+  const { toast } = useToast();
+
+  // Começa pelo nó raiz definido no storyTree
+  const [currentNodeId, setCurrentNodeId] = useState("marcapasso_start");
   const [selectedChoice, setSelectedChoice] = useState<string>("");
   const [showFeedback, setShowFeedback] = useState(false);
-  const [responses, setResponses] = useState<{ scenarioId: number; choiceId: string }[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const currentScenario = scenarios[currentScenarioIndex];
-  const progress = ((currentScenarioIndex + 1) / scenarios.length) * 100;
+  const currentNode = storyNodes[currentNodeId];
 
-  const selectedChoiceData = currentScenario.choices.find(c => c.id === selectedChoice);
+  // Encontra os dados da escolha selecionada
+  const selectedChoiceData = currentNode?.choices?.find(
+    (c) => c.id === selectedChoice
+  );
 
-  const handleSubmitChoice = () => {
-    if (!selectedChoice) return;
+  // Verifica se o nó atual é um final de jogo (sem escolhas ou type ending e sem nextNode)
+  const isEndOfGame = !currentNode?.choices || currentNode.choices.length === 0;
 
-    // Save response
-    setResponses([...responses, {
-      scenarioId: currentScenario.id,
-      choiceId: selectedChoice
-    }]);
+  useEffect(() => {
+    if (!currentNode) {
+      console.error(`Nó não encontrado: ${currentNodeId}`);
+      // Fallback se o nó não existir
+    }
+  }, [currentNodeId]);
 
-    setShowFeedback(true);
+  const handleSubmitChoice = async () => {
+    if (!selectedChoice || !selectedChoiceData) return;
+    setIsSaving(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Log da decisão
+        await supabase.from("decision_logs").insert({
+          user_id: user.id,
+          scenario_id: currentNodeId,
+          choice_id: selectedChoice,
+        });
+      }
+
+      // Se a escolha tem feedback, mostra. Se for apenas transição, já avança.
+      if (selectedChoiceData.feedback) {
+        setShowFeedback(true);
+        setTimeout(() => {
+          document
+            .getElementById("feedback-section")
+            ?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        handleNextStep();
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      toast({ title: "Erro de conexão", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleNextScenario = () => {
-    if (currentScenarioIndex < scenarios.length - 1) {
-      setCurrentScenarioIndex(currentScenarioIndex + 1);
+  const handleNextStep = () => {
+    if (selectedChoiceData?.nextNodeId) {
+      // Navega para o próximo nó da árvore
+      setCurrentNodeId(selectedChoiceData.nextNodeId);
       setSelectedChoice("");
       setShowFeedback(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Completed all scenarios
+      // Se não tem próximo nó, acabou a simulação
       navigate("/completion");
     }
   };
 
-  const handlePreviousScenario = () => {
-    if (currentScenarioIndex > 0) {
-      setCurrentScenarioIndex(currentScenarioIndex - 1);
-      setSelectedChoice("");
-      setShowFeedback(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  // Se chegou num nó sem saída (Fim da árvore), mostra botão de finalizar
+  if (isEndOfGame) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-2xl p-8 text-center space-y-6">
+          <h2 className="text-3xl font-bold text-primary">
+            {currentNode.title}
+          </h2>
+          <p className="text-lg text-foreground">{currentNode.description}</p>
+          <Button
+            size="lg"
+            onClick={() => navigate("/completion")}
+            className="w-full"
+          >
+            Concluir Simulação <ArrowRight className="ml-2" />
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <ShieldAlert className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">EtiCCista</h1>
-            </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
-                Cenário {currentScenarioIndex + 1} de {scenarios.length}
-              </span>
-            </div>
-          </div>
-          <div className="mt-3">
-            <Progress value={progress} className="h-2" />
-          </div>
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <ShieldAlert className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold">EtiCCista</h1>
+          </Link>
+          <span className="text-sm text-muted-foreground font-mono">
+            Nó: {currentNodeId}
+          </span>
         </div>
       </header>
 
-      {/* Content */}
       <div className="flex-1 px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Scenario Card */}
-          <Card className="p-8">
+          <Card className="p-8 animate-in fade-in duration-500">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                {currentScenario.title}
+                {currentNode.title}
               </h2>
               <div className="h-1 w-20 bg-primary rounded-full"></div>
             </div>
 
-            <div className="space-y-6 mb-8">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Contexto</h3>
-                <p className="text-foreground leading-relaxed">{currentScenario.context}</p>
+            <p className="text-lg text-foreground leading-relaxed mb-8">
+              {currentNode.description}
+            </p>
+
+            <RadioGroup
+              value={selectedChoice}
+              onValueChange={setSelectedChoice}
+              disabled={showFeedback}
+            >
+              <div className="space-y-3">
+                {currentNode.choices?.map((choice) => (
+                  <div
+                    key={choice.id}
+                    className={`flex items-start space-x-3 p-4 rounded-lg border transition-all cursor-pointer
+                      ${
+                        selectedChoice === choice.id
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border hover:border-primary/50 hover:bg-accent"
+                      }
+                      ${
+                        showFeedback && selectedChoice !== choice.id
+                          ? "opacity-50"
+                          : ""
+                      }
+                    `}
+                    onClick={() =>
+                      !showFeedback && setSelectedChoice(choice.id)
+                    }
+                  >
+                    <RadioGroupItem
+                      value={choice.id}
+                      id={choice.id}
+                      className="mt-1"
+                    />
+                    <Label
+                      htmlFor={choice.id}
+                      className="flex-1 cursor-pointer font-normal leading-relaxed"
+                    >
+                      {choice.text}
+                    </Label>
+                  </div>
+                ))}
               </div>
+            </RadioGroup>
 
-              <div className="bg-institutional-light p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-institutional-dark mb-2">Situação</h3>
-                <p className="text-foreground leading-relaxed">{currentScenario.situation}</p>
+            {!showFeedback && (
+              <div className="mt-8 flex justify-end">
+                <Button
+                  onClick={handleSubmitChoice}
+                  disabled={!selectedChoice || isSaving}
+                  className="px-8"
+                >
+                  {isSaving ? "Processando..." : "Tomar Decisão"}
+                  {!isSaving && <CheckCircle2 className="ml-2 h-4 w-4" />}
+                </Button>
               </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">
-                  {currentScenario.question}
-                </h3>
-
-                {!showFeedback ? (
-                  <>
-                    <RadioGroup value={selectedChoice} onValueChange={setSelectedChoice}>
-                      <div className="space-y-3">
-                        {currentScenario.choices.map((choice) => (
-                          <div
-                            key={choice.id}
-                            className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary hover:bg-institutional-light/50 transition-all cursor-pointer"
-                          >
-                            <RadioGroupItem value={choice.id} id={choice.id} className="mt-1" />
-                            <Label
-                              htmlFor={choice.id}
-                              className="flex-1 text-foreground leading-relaxed cursor-pointer"
-                            >
-                              {choice.text}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </RadioGroup>
-
-                    <div className="mt-6 flex gap-4">
-                      {currentScenarioIndex > 0 && (
-                        <Button
-                          variant="outline"
-                          onClick={handlePreviousScenario}
-                        >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
-                          Anterior
-                        </Button>
-                      )}
-                      <Button
-                        onClick={handleSubmitChoice}
-                        disabled={!selectedChoice}
-                        className="ml-auto"
-                      >
-                        Ver Feedback
-                        <CheckCircle2 className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </>
-                ) : null}
-              </div>
-            </div>
+            )}
           </Card>
 
-          {/* Feedback Card */}
           {showFeedback && selectedChoiceData && (
-            <Card className="p-8 border-2 border-primary animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-start gap-4 mb-6">
-                <AlertTriangle className="h-10 w-10 text-primary flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
-                    {selectedChoiceData.feedback.title}
-                  </h3>
-                  <div className="h-1 w-16 bg-primary rounded-full"></div>
+            <div id="feedback-section">
+              <Card className="p-8 border-2 border-primary/20 shadow-lg animate-in slide-in-from-bottom-4 fade-in">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="p-3 rounded-full bg-primary/10">
+                    <AlertTriangle className="h-8 w-8 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      Consequências
+                    </h3>
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
-                <Alert>
-                  <AlertTitle className="text-lg font-semibold">Análise</AlertTitle>
-                  <AlertDescription className="text-foreground leading-relaxed mt-2">
-                    {selectedChoiceData.feedback.description}
+                <Alert className="bg-muted/50 border-primary/20 mb-6">
+                  <AlertTitle>Feedback Ético</AlertTitle>
+                  <AlertDescription className="mt-2 text-base leading-relaxed">
+                    {selectedChoiceData.feedback}
                   </AlertDescription>
                 </Alert>
 
-                <div>
-                  <h4 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <ShieldAlert className="h-5 w-5 text-primary" />
-                    Princípio Ético Relacionado
-                  </h4>
-                  <p className="text-foreground font-medium bg-institutional-light p-4 rounded-lg">
-                    {selectedChoiceData.feedback.ethicalPrinciple}
-                  </p>
+                <div className="flex justify-end">
+                  <Button size="lg" onClick={handleNextStep}>
+                    Continuar <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
-
-                <div>
-                  <h4 className="text-lg font-semibold text-foreground mb-3">Riscos Identificados</h4>
-                  <ul className="space-y-2">
-                    {selectedChoiceData.feedback.risks.map((risk, index) => (
-                      <li key={index} className="flex items-start gap-2 text-foreground">
-                        <span className="text-destructive mt-1">⚠</span>
-                        <span className="leading-relaxed">{risk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-institutional-light p-6 rounded-lg">
-                  <h4 className="text-lg font-semibold text-institutional-dark mb-3">
-                    Recomendação Técnica
-                  </h4>
-                  <p className="text-foreground leading-relaxed">
-                    {selectedChoiceData.feedback.recommendation}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowFeedback(false);
-                    setSelectedChoice("");
-                  }}
-                >
-                  Revisar Escolhas
-                </Button>
-                <Button
-                  onClick={handleNextScenario}
-                  className="ml-auto"
-                >
-                  {currentScenarioIndex < scenarios.length - 1 ? "Próximo Cenário" : "Finalizar"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
+              </Card>
+            </div>
           )}
         </div>
       </div>
