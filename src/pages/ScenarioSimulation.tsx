@@ -30,6 +30,24 @@ const ScenarioSimulation = () => {
 
   const currentNode = storyNodes[currentNodeId];
 
+  // Proteção de Rota: Verifica se tem usuário logado ao abrir
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Acesso Restrito",
+          description: "Você precisa estar logado para acessar os cenários.",
+          variant: "destructive",
+        });
+        navigate("/auth"); // Redireciona para login
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
   // Verifica se o nó é válido
   useEffect(() => {
     if (!currentNode) {
