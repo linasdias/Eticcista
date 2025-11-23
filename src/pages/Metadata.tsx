@@ -21,9 +21,6 @@ const Metadata = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
-  // Estado para armazenar o ID do registro atual (se existir)
-  const [currentRecordId, setCurrentRecordId] = useState<string | null>(null);
-
   const [formData, setFormData] = useState({
     course: "",
     semester: "",
@@ -31,7 +28,7 @@ const Metadata = () => {
     priorKnowledge: "",
   });
 
-  // Carrega o DADO MAIS RECENTE do usuário ao abrir a página
+  // Carregar dados existentes (agora garantido ser único)
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -44,21 +41,16 @@ const Metadata = () => {
           return;
         }
 
-        // AQUI ESTÁ A CORREÇÃO PRINCIPAL:
-        // Ordenamos por data decrescente e pegamos o primeiro (limit 1).
-        // Isso garante que pegamos o último registro, mesmo que existam duplicados.
+        // Como user_id agora é ÚNICO, podemos usar .maybeSingle() com segurança
         const { data, error } = await supabase
           .from("academic_metadata")
           .select("*")
           .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
           .maybeSingle();
 
         if (error) throw error;
 
         if (data) {
-          setCurrentRecordId(data.id); // Guardamos o ID para fazer UPDATE depois
           setFormData({
             course: data.course,
             semester: data.semester,
@@ -91,49 +83,28 @@ const Metadata = () => {
         return;
       }
 
-      let error;
-
-      // Se já carregamos um registro (currentRecordId), fazemos UPDATE nele.
-      // Isso evita criar lixo no banco a cada clique.
-      if (currentRecordId) {
-        const response = await supabase
-          .from("academic_metadata")
-          .update({
-            course: formData.course,
-            semester: formData.semester,
-            has_ethics_discipline: formData.hasEthicsDiscipline,
-            prior_knowledge_level: parseInt(formData.priorKnowledge),
-            // Atualizamos o timestamp para saber que foi modificado agora
-            created_at: new Date().toISOString(),
-          })
-          .eq("id", currentRecordId); // Usa o ID específico do registro carregado
-
-        error = response.error;
-      } else {
-        // Se não existe registro nenhum, fazemos o primeiro INSERT
-        const response = await supabase
-          .from("academic_metadata")
-          .insert({
-            user_id: user.id,
-            course: formData.course,
-            semester: formData.semester,
-            has_ethics_discipline: formData.hasEthicsDiscipline,
-            prior_knowledge_level: parseInt(formData.priorKnowledge),
-          })
-          .select() // Retorna o dado criado para pegarmos o ID
-          .single();
-
-        if (response.data) {
-          setCurrentRecordId(response.data.id);
+      // A Mágica do UPSERT:
+      // Como configuramos a constraint 'unique' no banco, o upsert funciona perfeitamente.
+      // Ele atualiza se o user_id já existir, ou cria se não existir.
+      const { error } = await supabase.from("academic_metadata").upsert(
+        {
+          user_id: user.id,
+          course: formData.course,
+          semester: formData.semester,
+          has_ethics_discipline: formData.hasEthicsDiscipline,
+          prior_knowledge_level: parseInt(formData.priorKnowledge),
+          created_at: new Date().toISOString(), // Atualiza o timestamp da última modificação
+        },
+        {
+          onConflict: "user_id", // O campo chave para decidir se é update
         }
-        error = response.error;
-      }
+      );
 
       if (error) throw error;
 
       toast({
-        title: "Perfil atualizado!",
-        description: "Suas informações foram salvas.",
+        title: "Perfil salvo com sucesso!",
+        description: "Iniciando a simulação...",
       });
 
       setTimeout(() => {
@@ -188,9 +159,8 @@ const Metadata = () => {
                   Seu Perfil Acadêmico
                 </h2>
                 <p className="text-muted-foreground">
-                  {currentRecordId
-                    ? "Edite seus dados abaixo para manter seu perfil atualizado."
-                    : "Complete seu perfil para iniciar a pesquisa."}
+                  Mantenha seus dados atualizados para contribuir com a
+                  pesquisa.
                 </p>
               </div>
             </div>
@@ -322,7 +292,7 @@ const Metadata = () => {
                   className="w-full"
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {isLoading ? "Salvando..." : "Salvar e Continuar"}
+                  {isLoading ? "Salvar e Continuar" : "Salvar e Continuar"}
                 </Button>
               </div>
             </form>

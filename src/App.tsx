@@ -11,6 +11,7 @@ import Simulation from "./pages/Simulation";
 import ScenarioSimulation from "./pages/ScenarioSimulation";
 import Completion from "./pages/Completion";
 import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/simulation" element={<Simulation />} />
           <Route path="/scenario" element={<ScenarioSimulation />} />
           <Route path="/completion" element={<Completion />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
