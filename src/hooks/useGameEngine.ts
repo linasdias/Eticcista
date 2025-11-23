@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { storyNodes } from "@/data/storyTree"; // Você criará este arquivo
+import { storyNodes } from "@/data/storyTree";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 

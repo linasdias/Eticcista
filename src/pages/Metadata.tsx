@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShieldAlert, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +27,7 @@ const Metadata = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Save metadata to database (will be implemented)
     setTimeout(() => {
       setIsLoading(false);
@@ -29,14 +35,17 @@ const Metadata = () => {
     }, 1000);
   };
 
-  const isFormValid = Object.values(formData).every(value => value !== "");
+  const isFormValid = Object.values(formData).every((value) => value !== "");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            to="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             <ShieldAlert className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
@@ -64,7 +73,9 @@ const Metadata = () => {
                 <Label htmlFor="course">Curso</Label>
                 <Select
                   value={formData.course}
-                  onValueChange={(value) => setFormData({ ...formData, course: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, course: value })
+                  }
                 >
                   <SelectTrigger id="course">
                     <SelectValue placeholder="Selecione seu curso" />
@@ -74,9 +85,13 @@ const Metadata = () => {
                     <SelectItem value="si">Sistemas de Informação</SelectItem>
                     <SelectItem value="es">Engenharia de Software</SelectItem>
                     <SelectItem value="ec">Engenharia da Computação</SelectItem>
-                    <SelectItem value="ads">Análise e Desenvolvimento de Sistemas</SelectItem>
+                    <SelectItem value="ads">
+                      Análise e Desenvolvimento de Sistemas
+                    </SelectItem>
                     <SelectItem value="rc">Redes de Computadores</SelectItem>
-                    <SelectItem value="si-tec">Segurança da Informação</SelectItem>
+                    <SelectItem value="si-tec">
+                      Segurança da Informação
+                    </SelectItem>
                     <SelectItem value="outro">Outro</SelectItem>
                   </SelectContent>
                 </Select>
@@ -86,7 +101,9 @@ const Metadata = () => {
                 <Label htmlFor="semester">Período/Semestre Atual</Label>
                 <Select
                   value={formData.semester}
-                  onValueChange={(value) => setFormData({ ...formData, semester: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, semester: value })
+                  }
                 >
                   <SelectTrigger id="semester">
                     <SelectValue placeholder="Selecione o período" />
@@ -107,26 +124,40 @@ const Metadata = () => {
               </div>
 
               <div className="space-y-3">
-                <Label>Você já cursou alguma disciplina relacionada a ética em computação, privacidade de dados ou tópicos similares?</Label>
+                <Label>
+                  Você já cursou alguma disciplina relacionada a ética em
+                  computação, privacidade de dados ou tópicos similares?
+                </Label>
                 <RadioGroup
                   value={formData.hasEthicsDiscipline}
-                  onValueChange={(value) => setFormData({ ...formData, hasEthicsDiscipline: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, hasEthicsDiscipline: value })
+                  }
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="ethics-yes" />
-                    <Label htmlFor="ethics-yes" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="ethics-yes"
+                      className="font-normal cursor-pointer"
+                    >
                       Sim
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="no" id="ethics-no" />
-                    <Label htmlFor="ethics-no" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="ethics-no"
+                      className="font-normal cursor-pointer"
+                    >
                       Não
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="partial" id="ethics-partial" />
-                    <Label htmlFor="ethics-partial" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="ethics-partial"
+                      className="font-normal cursor-pointer"
+                    >
                       Apenas tópicos pontuais em outras disciplinas
                     </Label>
                   </div>
@@ -134,38 +165,58 @@ const Metadata = () => {
               </div>
 
               <div className="space-y-3">
-                <Label>Como você avalia seu conhecimento prévio sobre Internet dos Corpos (IoB) e seus riscos éticos?</Label>
+                <Label>
+                  Como você avalia seu conhecimento prévio sobre Internet dos
+                  Corpos (IoB) e seus riscos éticos?
+                </Label>
                 <RadioGroup
                   value={formData.priorKnowledge}
-                  onValueChange={(value) => setFormData({ ...formData, priorKnowledge: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, priorKnowledge: value })
+                  }
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1" id="knowledge-1" />
-                    <Label htmlFor="knowledge-1" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="knowledge-1"
+                      className="font-normal cursor-pointer"
+                    >
                       1 - Nenhum conhecimento
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="2" id="knowledge-2" />
-                    <Label htmlFor="knowledge-2" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="knowledge-2"
+                      className="font-normal cursor-pointer"
+                    >
                       2 - Conhecimento muito básico
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="3" id="knowledge-3" />
-                    <Label htmlFor="knowledge-3" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="knowledge-3"
+                      className="font-normal cursor-pointer"
+                    >
                       3 - Conhecimento moderado
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="4" id="knowledge-4" />
-                    <Label htmlFor="knowledge-4" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="knowledge-4"
+                      className="font-normal cursor-pointer"
+                    >
                       4 - Conhecimento avançado
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="5" id="knowledge-5" />
-                    <Label htmlFor="knowledge-5" className="font-normal cursor-pointer">
+                    <Label
+                      htmlFor="knowledge-5"
+                      className="font-normal cursor-pointer"
+                    >
                       5 - Conhecimento especializado
                     </Label>
                   </div>
