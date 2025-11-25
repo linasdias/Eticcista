@@ -6,7 +6,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-  ShieldAlert,
   AlertTriangle,
   CheckCircle2,
   ArrowRight,
@@ -77,7 +76,7 @@ const ScenarioSimulation_old = () => {
               to="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <ShieldAlert className="h-6 w-6 text-primary" />
+              <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
               <h1 className="text-xl font-bold text-foreground">EtiCCista</h1>
             </Link>
             <div className="flex items-center gap-4">
@@ -206,7 +205,7 @@ const ScenarioSimulation_old = () => {
 
                 <div>
                   <h4 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <ShieldAlert className="h-5 w-5 text-primary" />
+                    <img src="/logo.png" alt="Ethics" className="h-5 w-5" />
                     Princípio Ético Relacionado
                   </h4>
                   <p className="text-foreground font-medium bg-institutional-light p-4 rounded-lg">

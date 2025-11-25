@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShieldAlert, CheckCircle, BookOpen, Home } from "lucide-react";
+import { CheckCircle, BookOpen, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Completion = () => {
@@ -10,7 +10,7 @@ const Completion = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
         </div>

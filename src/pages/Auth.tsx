@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -93,7 +92,7 @@ const Auth = () => {
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
         </div>

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShieldAlert, Play, Loader2 } from "lucide-react";
+import { Play, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,7 +51,7 @@ const Simulation = () => {
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
         </div>

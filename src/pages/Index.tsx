@@ -19,7 +19,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-  ShieldAlert,
   Clock,
   BarChart,
   Users,
@@ -27,6 +26,7 @@ import {
   BookOpen,
   LogOut,
   LayoutDashboard,
+  Brain,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { simulations } from "@/data/simulations";
@@ -81,7 +81,7 @@ const Index = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-20">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
               EtiCCista
             </h1>
@@ -146,9 +146,9 @@ const Index = () => {
       <section className="bg-institutional-light border-b border-border/50 py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold text-institutional-dark tracking-tight">
-            EtiCCista: Decisões Técnicas,
+            Decisões Técnicas,
             <br />
-            Consequências Reais
+            Consequências Reais.
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Uma plataforma interativa para estudantes de computação explorarem
@@ -352,7 +352,7 @@ const Index = () => {
               </Card>
 
               <Card className="p-6">
-                <ShieldAlert className="h-12 w-12 text-primary mb-4" />
+                <Brain className="h-12 w-12 text-primary mb-4" />
                 <h4 className="text-xl font-semibold mb-3">Análise Ética</h4>
                 <p className="text-muted-foreground">
                   Receba feedback imediato sobre implicações éticas de suas
