@@ -31,6 +31,8 @@ import {
 import { Link } from "react-router-dom";
 import { simulations } from "@/data/simulations";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -78,32 +80,24 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-border bg-card sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            <h1 className="text-2xl font-bold text-foreground">
               EtiCCista
             </h1>
           </div>
 
-          <div className="flex gap-4 items-center">
-            <Button
-              variant="ghost"
-              className="hidden md:flex text-foreground/80 hover:text-primary"
-              asChild
-            >
-              <Link to="/iob">O que é IoB?</Link>
-            </Button>
-            <Button
-              variant="ghost"
-              className="hidden md:flex text-foreground/80 hover:text-primary"
-              asChild
-            >
-              <Link to="/data-feminism">Feminismo de Dados</Link>
-            </Button>
-
-            {/* Link existente do Dashboard */}
+          <div className="flex gap-6 items-center">
+            <div className="hidden md:flex gap-6 items-center">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/iob">Internet dos Corpos</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/datafem">Feminismo de Dados</Link>
+              </Button>
+            </div>
             <Button
               variant="ghost"
               className="text-foreground/80 hover:text-primary"
@@ -114,7 +108,7 @@ const Index = () => {
                 <span className="hidden sm:inline">Resultados</span>
               </Link>
             </Button>
-
+            <ThemeToggle />
             {userEmail ? (
               <>
                 <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
@@ -145,12 +139,15 @@ const Index = () => {
       {/* Hero Section */}
       <section className="bg-institutional-light border-b border-border/50 py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h1 className="text-4xl md:text-6xl font-bold text-institutional-dark tracking-tight">
-            Decisões Técnicas,
-            <br />
-            Consequências Reais.
+          <h1 className="text-4xl md:text-6xl font-bold text-institutional-dark dark:text-white tracking-tight min-h-[120px] md:min-h-[140px] flex items-center justify-center">
+            <TypingAnimation
+              text="Decisões Técnicas, Consequências Reais."
+              speed={100}
+              delay={200}
+              className="text-4xl md:text-6xl font-bold"
+            />
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground dark:text-white max-w-2xl mx-auto leading-relaxed">
             Uma plataforma interativa para estudantes de computação explorarem
             os dilemas éticos da Internet dos Corpos e do Feminismo de Dados.
           </p>
@@ -207,7 +204,7 @@ const Index = () => {
           {currentSimulations.map((sim) => (
             <Card
               key={sim.id}
-              className="group hover:shadow-lg transition-all duration-300 border-border/60 flex flex-col"
+              className="group hover:shadow-lg transition-all duration-300 border-border/60 flex flex-col bg-muted/40 dark:bg-muted/60"
             >
               <CardHeader>
                 <div className="flex justify-between items-start mb-4">
@@ -218,7 +215,7 @@ const Index = () => {
                     {sim.category}
                   </Badge>
                 </div>
-                <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors">
+                <CardTitle className="text-xl mb-2">
                   {sim.title}
                 </CardTitle>
                 <CardDescription className="line-clamp-3 text-base">
@@ -240,7 +237,7 @@ const Index = () => {
               </CardContent>
 
               <CardFooter className="pt-2">
-                <Button className="w-full" asChild>
+                <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
                   <Link to={`/scenario?id=${sim.id}`}>Iniciar Simulação</Link>
                 </Button>
               </CardFooter>
@@ -288,50 +285,6 @@ const Index = () => {
             </PaginationContent>
           </Pagination>
         )}
-        {/* Hero Section */}
-        <section className="border-b border-border bg-institutional-light py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-4xl font-bold text-institutional-dark mb-4">
-                Simulador Educacional sobre Internet dos Corpos e Feminismo de
-                Dados
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Plataforma interativa para conscientização sobre riscos éticos,
-                vieses de dados e desafios de privacidade em tecnologias de
-                Internet dos Corpos (IoB)
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* About IoB Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-3xl font-bold text-foreground mb-6">
-                O que é Internet dos Corpos?
-              </h3>
-              <div className="prose prose-lg max-w-none text-foreground">
-                <p className="mb-4">
-                  A Internet dos Corpos (IoB) refere-se a dispositivos
-                  conectados que coletam dados biométricos e de saúde, desde
-                  wearables fitness até implantes médicos e sistemas de
-                  monitoramento contínuo. Essas tecnologias levantam questões
-                  críticas sobre:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 mb-6">
-                  <li>Privacidade e consentimento informado</li>
-                  <li>Vieses algorítmicos e discriminação</li>
-                  <li>Segurança de dados sensíveis de saúde</li>
-                  <li>Autonomia corporal e autodeterminação</li>
-                  <li>Equidade no acesso e representação de dados</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Features */}
         <section className="py-16 bg-muted/50">
           <div className="container mx-auto px-4">
@@ -389,7 +342,7 @@ const Index = () => {
                   hipótese:
                 </p>
                 <blockquote className="border-l-4 border-primary pl-4 py-2 my-6 bg-institutional-light">
-                  <p className="text-lg font-medium text-institutional-dark">
+                  <p className="text-lg font-medium text-institutional-dark dark:text-white">
                     "Estudantes de computação apresentam baixo nível de
                     conscientização sobre riscos éticos e vieses em Internet dos
                     Corpos."
@@ -457,15 +410,15 @@ const Index = () => {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-primary text-primary-foreground">
+        <section className="py-16 bg-institutional-light">
           <div className="container mx-auto px-4 text-center">
-            <h3 className="text-3xl font-bold mb-4">Participe da Pesquisa</h3>
-            <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+            <h3 className="text-3xl font-bold mb-4 text-institutional-dark dark:text-white">Participe da Pesquisa</h3>
+            <p className="text-lg mb-8 max-w-2xl mx-auto text-foreground dark:text-white">
               Contribua para o avanço da conscientização ética em tecnologia.
               Sua participação é voluntária, anônima e leva aproximadamente
               15-20 minutos.
             </p>
-            <Button asChild size="lg" variant="secondary">
+            <Button asChild size="lg">
               <Link to="/auth">Começar Agora</Link>
             </Button>
           </div>

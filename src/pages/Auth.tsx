@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -87,7 +88,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
           <Link
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -95,6 +96,15 @@ const Auth = () => {
             <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
+          <div className="flex gap-4 items-center">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/iob">Internet dos Corpos</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/datafem">Feminismo de Dados</Link>
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

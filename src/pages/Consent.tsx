@@ -6,7 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast"; // Importando o toast para feedback
+import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle"; // Importando o toast para feedback
 
 const Consent = () => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ const Consent = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
           <Link
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -80,6 +81,15 @@ const Consent = () => {
             <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
+          <div className="flex gap-4 items-center">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/iob">Internet dos Corpos</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/datafem">Feminismo de Dados</Link>
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
