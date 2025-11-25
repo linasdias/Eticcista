@@ -12,6 +12,8 @@ import ScenarioSimulation from "./pages/ScenarioSimulation";
 import Completion from "./pages/Completion";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import DataFeminism from "./pages/DataFeminism";
+import InternetOfBodies from "./pages/InternetOfBodies";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/scenario" element={<ScenarioSimulation />} />
           <Route path="/completion" element={<Completion />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/data-feminism" element={<DataFeminism />} />
+          <Route path="/iob" element={<InternetOfBodies />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

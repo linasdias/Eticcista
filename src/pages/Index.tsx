@@ -26,6 +26,7 @@ import {
   BarChart3,
   BookOpen,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { simulations } from "@/data/simulations";
@@ -85,7 +86,35 @@ const Index = () => {
               EtiCCista
             </h1>
           </div>
+
           <div className="flex gap-4 items-center">
+            <Button
+              variant="ghost"
+              className="hidden md:flex text-foreground/80 hover:text-primary"
+              asChild
+            >
+              <Link to="/iob">O que é IoB?</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              className="hidden md:flex text-foreground/80 hover:text-primary"
+              asChild
+            >
+              <Link to="/data-feminism">Feminismo de Dados</Link>
+            </Button>
+
+            {/* Link existente do Dashboard */}
+            <Button
+              variant="ghost"
+              className="text-foreground/80 hover:text-primary"
+              asChild
+            >
+              <Link to="/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Resultados</span>
+              </Link>
+            </Button>
+
             {userEmail ? (
               <>
                 <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
