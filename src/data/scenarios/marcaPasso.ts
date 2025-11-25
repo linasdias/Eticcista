@@ -1,5 +1,21 @@
 import { StoryNode } from "@/data/storyNode";
 
+const HISTORIA_REAL_MARCAPASSO = `
+---
+
+**📚 A História Real (2016-2017): O Caso Abbott/St. Jude**
+
+Independentemente do seu caminho nesta simulação, o caso real foi marcado por negação corporativa e riscos sistêmicos.
+
+* **O Alerta:** Em 2016, a empresa de segurança **MedSec** e a firma de investimentos **Muddy Waters** revelaram vulnerabilidades críticas em marcapassos da St. Jude Medical (depois adquirida pela Abbott).
+* **A Falha:** Os dispositivos usavam comunicação RF sem autenticação adequada, permitindo drenagem de bateria e choques remotos.
+* **A Reação:** A empresa processou os pesquisadores e negou as falhas por meses.
+* **O Desfecho:** Em 2017, a **FDA** confirmou os riscos, forçando uma atualização de firmware para **465.000 pacientes**.
+
+**🔗 Fontes para aprofundamento:**
+* [Matéria do The Guardian](https://www-theguardian-com.translate.goog/technology/2017/aug/31/hacking-risk-recall-pacemakers-patient-death-fears-fda-firmware-update?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc)
+`;
+
 export const marcapassoNodes: Record<string, StoryNode> = {
   // --- TRECHO 1: CONTEXTO ---
   marcapasso_start: {
@@ -208,6 +224,8 @@ Desconsiderar vulnerabilidades afeta mais gravemente os grupos que dependem do d
 **Resultado:** Recall evitado e zero mortes relacionadas à falha de segurança.
 
 A empresa estabeleceu-se como referência de ética em Internet dos Corpos (IoB). A comunidade médica confia na tecnologia e o produto ganhou mercado e respeito por sua robustez e segurança.
+
+${HISTORIA_REAL_MARCAPASSO}
     `,
     choices: [],
   },
@@ -222,6 +240,8 @@ A empresa estabeleceu-se como referência de ética em Internet dos Corpos (IoB)
 Você evitou o pior cenário, mas a um custo elevado.
 
 Ao ouvir os relatos (seja das usuárias ou dos pesquisadores) antes do colapso total, vidas foram salvas. No entanto, houve um custo significativo de imagem e financeiro para corrigir a falha em produtos já comercializados. A transparência evitou o desastre completo, mas a confiança na marca foi abalada.
+
+${HISTORIA_REAL_MARCAPASSO}
     `,
     choices: [],
   },
@@ -252,6 +272,8 @@ Mulheres idosas, residentes de áreas rurais e pessoas de baixa renda, muitas ve
 2. **Falta de diversidade nas equipes:** Modelos mentais homogêneos na engenharia e gestão levaram a um produto mal avaliado em cenários reais de uso e risco.
 
 3. **Desigualdade de Poder:** A falha tecnológica ampliou desigualdades sociais e de gênero preexistentes. Uma vulnerabilidade técnica afeta desproporcionalmente quem tem menos recursos para lidar com as consequências.
+
+${HISTORIA_REAL_MARCAPASSO}
     `,
     choices: [],
   },
