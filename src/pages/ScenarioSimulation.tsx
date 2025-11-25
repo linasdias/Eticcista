@@ -13,7 +13,6 @@ import {
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { storyNodes } from "@/data/storyTree";
 import { useToast } from "@/hooks/use-toast";
-import ReactMarkdown from "react-markdown"; // <--- Importante
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ScenarioSimulation = () => {
@@ -21,7 +20,9 @@ const ScenarioSimulation = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
+  // Define o nó inicial baseado na URL ou padrão
   const initialNodeId = searchParams.get("id") || "marcapasso_start";
+
   const [currentNodeId, setCurrentNodeId] = useState(initialNodeId);
   const [selectedChoice, setSelectedChoice] = useState<string>("");
   const [showFeedback, setShowFeedback] = useState(false);
@@ -29,8 +30,28 @@ const ScenarioSimulation = () => {
 
   const currentNode = storyNodes[currentNodeId];
 
+  // Proteção de Rota: Verifica se tem usuário logado ao abrir
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Acesso Restrito",
+          description: "Você precisa estar logado para acessar os cenários.",
+          variant: "destructive",
+        });
+        navigate("/auth"); // Redireciona para login
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  // Verifica se o nó é válido
   useEffect(() => {
     if (!currentNode) {
+      console.error(`Cenário não encontrado: ${currentNodeId}`);
       toast({
         title: "Erro",
         description: "Cenário não encontrado.",
@@ -45,6 +66,8 @@ const ScenarioSimulation = () => {
   const selectedChoiceData = currentNode.choices?.find(
     (c) => c.id === selectedChoice
   );
+
+  // Se não houver escolhas (choices vazio ou undefined), é um final de jogo
   const isEndOfGame = !currentNode.choices || currentNode.choices.length === 0;
 
   const handleSubmitChoice = async () => {
@@ -55,6 +78,7 @@ const ScenarioSimulation = () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       if (user) {
         await supabase.from("decision_logs").insert({
           user_id: user.id,
@@ -62,6 +86,8 @@ const ScenarioSimulation = () => {
           choice_id: selectedChoice,
         });
       }
+
+      // Mostra feedback se houver
       if (selectedChoiceData.feedback) {
         setShowFeedback(true);
       } else {
@@ -79,26 +105,22 @@ const ScenarioSimulation = () => {
       selectedChoiceData?.nextNodeId &&
       storyNodes[selectedChoiceData.nextNodeId]
     ) {
+      // Avança para o próximo nó da árvore
       setCurrentNodeId(selectedChoiceData.nextNodeId);
       setSelectedChoice("");
       setShowFeedback(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+      // Se não tem próximo nó, finaliza
       navigate("/completion");
     }
   };
 
-  // Componente auxiliar para renderizar texto com segurança e estilo
-  const MarkdownText = ({ content }: { content: string }) => (
-    <div className="prose prose-slate dark:prose-invert max-w-none text-foreground leading-relaxed">
-      <ReactMarkdown>{content}</ReactMarkdown>
-    </div>
-  );
-
+  // Renderização de Tela de Fim de Cenário (Consequência Final)
   if (isEndOfGame) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-3xl p-8 text-center space-y-6 animate-in zoom-in-95 duration-500">
+        <Card className="max-w-2xl p-8 text-center space-y-6 animate-in zoom-in-95 duration-500">
           <div className="flex justify-center mb-4">
             <div className="p-4 rounded-full bg-primary/10">
               <img src="/logo.png" alt="EtiCCista" className="h-12 w-12" />
@@ -110,7 +132,9 @@ const ScenarioSimulation = () => {
           </h2>
 
           <div className="bg-muted/30 p-6 rounded-lg text-left border-l-4 border-primary">
-            <MarkdownText content={currentNode.description} />
+            <p className="text-lg text-foreground leading-relaxed">
+              {currentNode.description}
+            </p>
           </div>
 
           <Button
@@ -125,6 +149,7 @@ const ScenarioSimulation = () => {
     );
   }
 
+  // Renderização Normal (Dilema)
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card sticky top-0 z-10">
@@ -159,10 +184,9 @@ const ScenarioSimulation = () => {
               <div className="h-1 w-20 bg-primary rounded-full"></div>
             </div>
 
-            {/* Renderização do Texto Rico com Markdown */}
-            <div className="mb-8">
-              <MarkdownText content={currentNode.description} />
-            </div>
+            <p className="text-lg text-foreground leading-relaxed mb-8">
+              {currentNode.description}
+            </p>
 
             <RadioGroup
               value={selectedChoice}
@@ -194,16 +218,12 @@ const ScenarioSimulation = () => {
                       id={choice.id}
                       className="mt-1"
                     />
-                    {/* Renderiza também o texto da opção como Markdown (para permitir negrito nas opções) */}
-                    <div className="flex-1 cursor-pointer font-normal leading-relaxed text-base">
-                      <ReactMarkdown
-                        components={{
-                          p: ({ node, ...props }) => <span {...props} />,
-                        }}
-                      >
-                        {choice.text}
-                      </ReactMarkdown>
-                    </div>
+                    <Label
+                      htmlFor={choice.id}
+                      className="flex-1 cursor-pointer font-normal leading-relaxed text-base"
+                    >
+                      {choice.text}
+                    </Label>
                   </div>
                 ))}
               </div>
@@ -233,23 +253,26 @@ const ScenarioSimulation = () => {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-foreground">
-                      Feedback e Análise
+                      Feedback Ético
                     </h3>
                     <p className="text-muted-foreground">
-                      Consequências da sua escolha
+                      Análise das consequências da sua escolha
                     </p>
                   </div>
                 </div>
 
                 <Alert className="bg-muted/50 border-primary/20 mb-8">
-                  <div className="text-base leading-relaxed">
-                    <MarkdownText content={selectedChoiceData.feedback} />
-                  </div>
+                  <AlertTitle className="text-lg font-semibold text-primary mb-2">
+                    Consequências
+                  </AlertTitle>
+                  <AlertDescription className="text-base leading-relaxed">
+                    {selectedChoiceData.feedback}
+                  </AlertDescription>
                 </Alert>
 
                 <div className="flex justify-end">
                   <Button size="lg" onClick={handleNextStep} className="group">
-                    Continuar
+                    Ver Resultado Final
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>

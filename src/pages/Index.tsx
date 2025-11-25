@@ -25,7 +25,6 @@ import {
   BarChart3,
   BookOpen,
   LogOut,
-  LayoutDashboard,
   Brain,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -88,7 +87,6 @@ const Index = () => {
               EtiCCista
             </h1>
           </div>
-
           <div className="flex gap-6 items-center">
             <div className="hidden md:flex gap-6 items-center">
               <Button variant="ghost" size="sm" asChild>
@@ -98,16 +96,6 @@ const Index = () => {
                 <Link to="/datafem">Feminismo de Dados</Link>
               </Button>
             </div>
-            <Button
-              variant="ghost"
-              className="text-foreground/80 hover:text-primary"
-              asChild
-            >
-              <Link to="/dashboard">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Resultados</span>
-              </Link>
-            </Button>
             <ThemeToggle />
             {userEmail ? (
               <>
