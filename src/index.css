@@ -9,90 +9,90 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 98%;
-    --foreground: 220 15% 20%;
+    --foreground: 275 15% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
+    --card-foreground: 275 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
+    --popover-foreground: 275 15% 20%;
 
-    --primary: 210 85% 42%;
+    --primary: 275 100% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 20% 88%;
-    --secondary-foreground: 220 15% 20%;
+    --secondary: 275 80% 88%;
+    --secondary-foreground: 275 15% 20%;
 
-    --muted: 215 20% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 275 80% 94%;
+    --muted-foreground: 275 80% 45%;
 
-    --accent: 205 90% 55%;
+    --accent: 275 100% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 85%;
-    --input: 215 20% 85%;
-    --ring: 210 85% 42%;
+    --border: 275 80% 85%;
+    --input: 275 80% 85%;
+    --ring: 275 100% 60%;
 
     --radius: 0.375rem;
 
-    --institutional: 210 85% 42%;
-    --institutional-light: 210 90% 92%;
-    --institutional-dark: 210 90% 32%;
+    --institutional: 275 100% 60%;
+    --institutional-light: 275 100% 92%;
+    --institutional-dark: 275 100% 32%;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 15% 20%;
-    --sidebar-primary: 210 85% 42%;
+    --sidebar-foreground: 275 15% 20%;
+    --sidebar-primary: 275 100% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 20% 94%;
-    --sidebar-accent-foreground: 220 15% 20%;
-    --sidebar-border: 215 20% 85%;
-    --sidebar-ring: 210 85% 42%;
+    --sidebar-accent: 275 80% 94%;
+    --sidebar-accent-foreground: 275 15% 20%;
+    --sidebar-border: 275 80% 85%;
+    --sidebar-ring: 275 100% 60%;
   }
 
   .dark {
-    --background: 220 20% 12%;
+    --background: 275 80% 12%;
     --foreground: 0 0% 95%;
 
-    --card: 220 18% 16%;
+    --card: 275 70% 16%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 220 18% 16%;
+    --popover: 275 70% 16%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 210 85% 55%;
+    --primary: 275 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 22%;
+    --secondary: 275 100% 22%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 220 15% 22%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 275 100% 22%;
+    --muted-foreground: 275 100% 65%;
 
-    --accent: 205 85% 60%;
+    --accent: 275 100% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
-    --ring: 210 85% 55%;
+    --border: 275 80% 25%;
+    --input: 275 80% 25%;
+    --ring: 275 100% 50%;
 
-    --institutional: 210 85% 55%;
-    --institutional-light: 210 70% 25%;
-    --institutional-dark: 210 85% 65%;
+    --institutional: 275 100% 50%;
+    --institutional-light: 275 100% 25%;
+    --institutional-dark: 275 100% 65%;
 
-    --sidebar-background: 220 18% 16%;
+    --sidebar-background: 275 70% 16%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 210 85% 55%;
+    --sidebar-primary: 275 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 22%;
+    --sidebar-accent: 275 100% 22%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 220 15% 25%;
-    --sidebar-ring: 210 85% 55%;
+    --sidebar-border: 275 80% 25%;
+    --sidebar-ring: 275 100% 50%;
   }
 }
 
@@ -103,5 +103,9 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'IBM Plex Mono', monospace;
   }
 }
