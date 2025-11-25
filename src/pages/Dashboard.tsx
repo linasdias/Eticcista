@@ -29,6 +29,7 @@ import {
 } from "recharts";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type AcademicData = {
   course: string;
@@ -155,11 +156,21 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
-            <h1 className="text-xl font-bold">
-              Dashboard Analítico - EtiCCista
-            </h1>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
+              <h1 className="text-xl font-bold">
+                Dashboard Analítico - EtiCCista
+              </h1>
+            </div>
+            <div className="flex gap-4 items-center">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/iob">Internet dos Corpos</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/datafem">Feminismo de Dados</Link>
+              </Button>
+            </div>
           </div>
           <Button variant="outline" size="sm" asChild>
             <Link to="/">

@@ -13,6 +13,7 @@ import {
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { storyNodes } from "@/data/storyTree";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ScenarioSimulation = () => {
   const navigate = useNavigate();
@@ -153,10 +154,20 @@ const ScenarioSimulation = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
-            <h1 className="text-xl font-bold">EtiCCista</h1>
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
+              <h1 className="text-xl font-bold">EtiCCista</h1>
+            </Link>
+            <div className="flex gap-4 items-center">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/iob">Internet dos Corpos</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/datafem">Feminismo de Dados</Link>
+              </Button>
+            </div>
+          </div>
           <span className="text-xs font-mono bg-muted px-2 py-1 rounded">
             {currentNodeId}
           </span>
