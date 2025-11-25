@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  ShieldAlert,
   Users,
   BrainCircuit,
   GraduationCap,
@@ -157,7 +156,7 @@ const Dashboard = () => {
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldAlert className="h-6 w-6 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
             <h1 className="text-xl font-bold">
               Dashboard Analítico - EtiCCista
             </h1>

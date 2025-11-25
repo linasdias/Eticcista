@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, ShieldAlert, Users, BarChart3 } from "lucide-react";
+import { BookOpen, Users, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -11,7 +11,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <ShieldAlert className="h-8 w-8 text-primary" />
+              <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
             </div>
             <Button asChild>
@@ -76,7 +76,7 @@ const Index = () => {
             </Card>
 
             <Card className="p-6">
-              <ShieldAlert className="h-12 w-12 text-primary mb-4" />
+              <img src="/logo.png" alt="Security" className="h-12 w-12 mb-4" />
               <h4 className="text-xl font-semibold mb-3">Análise Ética</h4>
               <p className="text-muted-foreground">
                 Receba feedback imediato sobre implicações éticas de suas escolhas, com referências 

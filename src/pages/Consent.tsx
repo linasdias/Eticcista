@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ShieldAlert, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast"; // Importando o toast para feedback
 
@@ -77,7 +77,7 @@ const Consent = () => {
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
         </div>

@@ -1,7 +1,6 @@
 import {
   Activity,
   Smartphone,
-  ShieldAlert,
   BrainCircuit,
   Lock,
 } from "lucide-react";

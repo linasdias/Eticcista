@@ -6,7 +6,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-  ShieldAlert,
   AlertTriangle,
   CheckCircle2,
   ArrowRight,
@@ -123,7 +122,7 @@ const ScenarioSimulation = () => {
         <Card className="max-w-2xl p-8 text-center space-y-6 animate-in zoom-in-95 duration-500">
           <div className="flex justify-center mb-4">
             <div className="p-4 rounded-full bg-primary/10">
-              <ShieldAlert className="h-12 w-12 text-primary" />
+              <img src="/logo.png" alt="EtiCCista" className="h-12 w-12" />
             </div>
           </div>
 
@@ -155,7 +154,7 @@ const ScenarioSimulation = () => {
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <ShieldAlert className="h-6 w-6 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-6 w-6" />
             <h1 className="text-xl font-bold">EtiCCista</h1>
           </Link>
           <span className="text-xs font-mono bg-muted px-2 py-1 rounded">

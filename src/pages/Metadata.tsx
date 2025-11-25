@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ShieldAlert, User, Save } from "lucide-react";
+import { User, Save } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -128,7 +128,7 @@ const Metadata = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
-          <ShieldAlert className="h-12 w-12 text-primary mx-auto animate-pulse" />
+          <img src="/logo.png" alt="Carregando" className="h-12 w-12 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Carregando seus dados...</p>
         </div>
       </div>
@@ -143,7 +143,7 @@ const Metadata = () => {
             to="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <ShieldAlert className="h-8 w-8 text-primary" />
+            <img src="/logo.png" alt="EtiCCista Logo" className="h-8 w-8" />
             <h1 className="text-2xl font-bold text-foreground">EtiCCista</h1>
           </Link>
         </div>
