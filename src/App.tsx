@@ -12,6 +12,8 @@ import ScenarioSimulation from "./pages/ScenarioSimulation";
 import Completion from "./pages/Completion";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import IoB from "./pages/IoB";
+import DataFem from "./pages/DataFem";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/scenario" element={<ScenarioSimulation />} />
           <Route path="/completion" element={<Completion />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/iob" element={<IoB />} />
+          <Route path="/datafem" element={<DataFem />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
