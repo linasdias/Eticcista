@@ -14,6 +14,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { storyNodes } from "@/data/storyTree";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import ReactMarkdown from "react-markdown";
 
 const ScenarioSimulation = () => {
   const navigate = useNavigate();
@@ -116,6 +117,14 @@ const ScenarioSimulation = () => {
     }
   };
 
+    // Componente auxiliar para renderizar texto com segurança e estilo
+  const MarkdownText = ({ content }: { content: string }) => (
+    <div className="prose prose-slate dark:prose-invert max-w-none text-foreground leading-relaxed">
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </div>
+  );
+
+
   // Renderização de Tela de Fim de Cenário (Consequência Final)
   if (isEndOfGame) {
     return (
@@ -133,7 +142,7 @@ const ScenarioSimulation = () => {
 
           <div className="bg-muted/30 p-6 rounded-lg text-left border-l-4 border-primary">
             <p className="text-lg text-foreground leading-relaxed">
-              {currentNode.description}
+              <MarkdownText content={currentNode.description} />
             </p>
           </div>
 
@@ -185,7 +194,9 @@ const ScenarioSimulation = () => {
             </div>
 
             <p className="text-lg text-foreground leading-relaxed mb-8">
-              {currentNode.description}
+            <div className="mb-8">
+              <MarkdownText content={currentNode.description} />
+            </div>
             </p>
 
             <RadioGroup
@@ -218,12 +229,15 @@ const ScenarioSimulation = () => {
                       id={choice.id}
                       className="mt-1"
                     />
-                    <Label
-                      htmlFor={choice.id}
-                      className="flex-1 cursor-pointer font-normal leading-relaxed text-base"
-                    >
-                      {choice.text}
-                    </Label>
+                    <div className="flex-1 cursor-pointer font-normal leading-relaxed text-base">
+                      <ReactMarkdown
+                        components={{
+                          p: ({ node, ...props }) => <span {...props} />,
+                        }}
+                      >
+                        {choice.text}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -262,17 +276,14 @@ const ScenarioSimulation = () => {
                 </div>
 
                 <Alert className="bg-muted/50 border-primary/20 mb-8">
-                  <AlertTitle className="text-lg font-semibold text-primary mb-2">
-                    Consequências
-                  </AlertTitle>
-                  <AlertDescription className="text-base leading-relaxed">
-                    {selectedChoiceData.feedback}
-                  </AlertDescription>
+                  <div className="text-base leading-relaxed">
+                    <MarkdownText content={selectedChoiceData.feedback} />
+                  </div>
                 </Alert>
 
                 <div className="flex justify-end">
                   <Button size="lg" onClick={handleNextStep} className="group">
-                    Ver Resultado Final
+                    Continuar
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>

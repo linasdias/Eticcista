@@ -26,6 +26,7 @@ import {
   BookOpen,
   LogOut,
   Brain,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { simulations } from "@/data/simulations";
@@ -95,6 +96,16 @@ const Index = () => {
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/datafem">Feminismo de Dados</Link>
               </Button>
+              <Button
+              variant="ghost"
+              className="text-foreground/80 hover:text-primary"
+              asChild
+            >
+              <Link to="/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Resultados</span>
+              </Link>
+            </Button>
             </div>
             <ThemeToggle />
             {userEmail ? (
